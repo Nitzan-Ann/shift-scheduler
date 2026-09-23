@@ -28,7 +28,13 @@ app.post('/api/employees', async (req, res) => {
 
 app.get('/api/employees', async (req, res) => {
     try {
-        const employees = await prisma.employee.findMany();
+        const { includeInactive } = req.query;
+        const where = includeInactive === 'true' ? {} : { isActive: true };
+
+        const employees = await prisma.employee.findMany({
+            where,
+            orderBy: { name: 'asc' }
+        });
         res.json(employees);
     }
     catch (err) {
@@ -64,7 +70,18 @@ app.get('/api/employees/:id', async (req, res) => {
 app.post('/api/employees/:id/availability', async (req, res) => {
     try {
         const numericId = Number(req.params.id)
-        const { availability } = req.body;
+        const { availability, from, to } = req.body;
+
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+
+        await prisma.availability.deleteMany({
+            where: {
+                employeeId: numericId,
+                date: { gte: fromDate, lte: toDate }
+            }
+        });
+        
         const dataWithEmployeeId = availability.map(item => ({ ...item, date: new Date(item.date), employeeId: numericId }));
 
         const employeeAvailability = await prisma.availability.createMany({
@@ -91,6 +108,30 @@ app.post('/api/schedule/generate', async (req, res) => {
             date: { gte: fromDate, lte: toDate }
         }
     });
+
+    const existingShiftsCount = await prisma.shift.count({
+        where: { date: { gte: fromDate, lte: toDate } }
+    });
+    
+    if (existingShiftsCount === 0) {
+        const shiftsToCreate = [];
+        const currentDate = new Date(fromDate);
+
+    while (currentDate <= toDate) {
+        const dateForShift = new Date(currentDate);
+        shiftsToCreate.push({
+            date: dateForShift,
+            shiftType: "morning",
+            requiredCount: (dateForShift.getDay() === 5 || dateForShift.getDay() === 6) ? 2 : 3
+        });
+        shiftsToCreate.push({ date: dateForShift, shiftType: "noon", requiredCount: 2 });
+        shiftsToCreate.push({ date: dateForShift, shiftType: "night", requiredCount: 2 });
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    await prisma.shift.createMany({ data: shiftsToCreate });
+    }
+
     const shifts = await prisma.shift.findMany({
         where: {
             date: { gte: fromDate, lte: toDate }
@@ -101,13 +142,20 @@ app.post('/api/schedule/generate', async (req, res) => {
 
     const schedule = solveSchedule(employees, availabilityFixed, shiftsFixed);
 
+    await prisma.assignment.deleteMany({
+        where: { shift: { date: { gte: fromDate, lte: toDate } } }
+    });
 
+    const updatePromises = schedule.map(item =>
+        prisma.shift.update({
+            where: { id: item.shift.id },
+            data: { isFullyStaffed: item.isFullyStaffed }
+        })
+    );
+    await Promise.all(updatePromises);
+    
     const assignmentsData = [];
     for (const item of schedule) {
-        await prisma.shift.update({
-        where: { id: item.shift.id },
-        data: { isFullyStaffed: item.isFullyStaffed }
-    });
         for (const emp of item.employees) {
             assignmentsData.push({ employeeId: emp.id, shiftId: item.shift.id });
         }
@@ -164,13 +212,13 @@ app.get('/api/schedule', async (req, res) => {
 });
 
 app.post('/api/schedule/confirm', async (req, res) => {
-        const { from, to } = req.query;
+        const { from, to, status } = req.query;
         const fromDate = new Date(from);
         const toDate = new Date(to);
     try {
         const scheduleConfirm = await prisma.shift.updateMany({
             where: {date: { gte: fromDate, lte: toDate } },
-            data: { status: "confirmed" }
+            data: { status: status }
         });
 
         return res.status(200).json(scheduleConfirm);
@@ -181,7 +229,42 @@ app.post('/api/schedule/confirm', async (req, res) => {
     }
 });
 
+app.get('/api/availability', async (req, res) => {
+        const { from, to } = req.query;
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+    try {
+        const availabilityInDates = await prisma.availability.findMany({
+            where: {
+                date: { gte: fromDate, lte: toDate }
+            },
+            include: { employee: true,
 
+            }
+        });
+
+        return res.status(200).json(availabilityInDates);
+
+    } catch (err) {
+        console.error("GET /api/availability", err);
+        return res.status(500).json({ error: "Failed to get availability" });
+    }
+});
+
+app.patch('/api/employees/:id', async (req, res) => {
+    try {
+        const numericId = Number(req.params.id)
+        const updatedEmployee =await prisma.employee.update({
+        where: { id: numericId },
+        data: req.body
+        });
+        res.json({ updatedEmployee });
+
+        } catch (err) {
+            console.error("PATCH /api/employees/:id", err);
+            res.status(500).json({ error: 'Failed to update employee' });
+        }
+    });
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

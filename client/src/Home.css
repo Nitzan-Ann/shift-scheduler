@@ -1,0 +1,48 @@
+.home {
+  padding: 60px 40px 20px;
+}
+
+.home-title {
+  font-family: 'Pacifico', cursive;
+  color: black;
+  text-align: left;
+  font-size: 56px;
+  margin: 0 0 24px -6px;
+}
+
+.home-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin: 0 0 40px 0;
+}
+
+.home-bar {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.home-PendingSchedule {
+  gap: 40px;
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.home-btn {
+  padding: 30px 40px;
+  font-size: 18px;
+  min-width: 200px;
+  border-radius: 12px;
+  transition: transform 0.15s;
+}
+
+.home-btn:focus {
+  outline: none;
+}
+
+.home-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

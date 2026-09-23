@@ -1,0 +1,105 @@
+.employeeManagement-page {
+  padding: 10px 60px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+.content-wrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.employee-list {
+  color: black;
+  width: 500px;
+  flex-shrink: 0;
+}
+
+.employee-form-section {
+  width: 500px;
+  flex-shrink: 0;
+  min-height: 250px;
+}
+
+.employee-list ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.employee-list li {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 4px 0;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 350px;
+  color: black;
+}
+
+.form-body input,
+.form-body select {
+  padding: 8px 20px;
+  border-radius: 10px;
+  border: 1px solid black;
+  background: white;
+}
+
+.form-body select {
+  outline: none;
+  box-shadow: none;
+}
+
+
+.form-body label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-buttons button {
+  width: auto;
+}
+
+.page-title {
+  font-family: 'Pacifico', cursive;
+  color: black;
+  text-align: left;
+  margin: 20px 40px 32px;
+  font-size: 40px;
+  letter-spacing: normal;
+}
+
+.back-btn {
+  align-self: flex-start;
+  margin: 8px 40px 20px;
+}
+
+.employeeManagement-page h3 {
+  font-weight: normal;
+  color: black;
+  margin-bottom: 16px;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+}
