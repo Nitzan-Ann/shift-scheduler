@@ -1,0 +1,130 @@
+
+.proposedschedule-page {
+  width: 100%;
+  padding: 20px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.weekday-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.schedule-day-cell {
+  border: 1px solid black;
+  border-radius: 6px;
+  padding: 6px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.schedule-day-cell.empty {
+  border: none;
+}
+
+.day-number {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.schedule-slot {
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 3px 6px;
+  min-height: 20px;
+  font-size: 12px;
+}
+
+.page-title {
+  font-family: 'Pacifico', cursive;
+  color: black;
+  text-align: left;
+  margin: 20px 40px 32px;
+  font-size: 40px;
+  letter-spacing: normal;
+}
+
+.back-btn {
+  display: inline-block;
+  align-self: flex-start;
+  margin: 8px 40px 20px;
+  padding: 8px 20px;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.month-nav {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.month-nav button {
+  display: inline-block;
+  margin: 0 12px;
+  width: 110px;
+  padding: 8px 0;
+}
+
+.month-nav h3 {
+  display: inline-block;
+  margin: 0 16px;
+}
+
+.calendar .shift-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 6px;
+  border-top: 4px solid black;
+}
+
+.calendar .shift-group:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 30px;
+
+}
+
+.schedule-slot:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+@media print {
+    .back-btn,
+    .month-nav button,
+    .action-buttons {
+        display: none;
+    }
+
+    .proposedschedule-page {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .calendar {
+        font-size: 8px;
+    }
+}
