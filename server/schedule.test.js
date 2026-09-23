@@ -183,3 +183,25 @@ test('solveSchedule - marks a shift as not fully staffed when no valid combinati
   assert.strictEqual(result[0].isFullyStaffed, false);
 });
 
+test('solveSchedule - balances shift assignments across employees with fewer prior shifts', () => {
+  const employees = [
+    { id: 1, name: "Dana", seniority: "senior", isShiftLead: true },
+    { id: 2, name: "David", seniority: "senior", isShiftLead: true }
+  ];
+
+  const availability = [
+    { employeeId: 1, date: "2026-08-25", shiftType: "morning" },
+    { employeeId: 1, date: "2026-08-26", shiftType: "morning" },
+    { employeeId: 2, date: "2026-08-25", shiftType: "morning" },
+    { employeeId: 2, date: "2026-08-26", shiftType: "morning" }
+  ];
+
+  const shifts = [
+    { date: "2026-08-25", shiftType: "morning", requiredCount: 1 },
+    { date: "2026-08-26", shiftType: "morning", requiredCount: 1 }
+  ];
+
+  const result = solveSchedule(employees, availability, shifts );
+
+  assert.notStrictEqual(result[0].employees[0].id, result[1].employees[0].id);
+});
